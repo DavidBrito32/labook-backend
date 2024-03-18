@@ -12,5 +12,4 @@ Posts.get("/", post.getAllPosts);
 Posts.post("/", post.createPosts);
 Posts.put("/:id", post.editPost);
 Posts.delete("/:id", post.deletePost);
-
-Posts.post("/:id/like", post.likePost);
+Posts.post("/:id/like", post.LikeDislikePost);

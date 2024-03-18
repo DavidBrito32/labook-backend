@@ -25,6 +25,7 @@ export interface PostsInputDTO {
 export interface PostInputEditDTO {
 	idPost: string;
 	content?: string;
+	authorization: string;
 }
 
 export interface PostDeleteInputDTO {
@@ -88,7 +89,11 @@ export const PostSchemaEdit = z.object({
 		invalid_type_error: "'idPost' - deve ser uma string",
 		required_error: "'idPost' - é um campo obrigatorio"
 	}).min(2),
-	content: z.string({invalid_type_error: "'content' - deve ser uma string"}).min(2).optional()
+	content: z.string({invalid_type_error: "'content' - deve ser uma string"}).min(2).optional(),
+	authorization: z.string({
+		invalid_type_error: "'authorization' - deve ser uma string",
+		required_error: "'authorization' - é um campo obrigatorio"
+	}).min(2)
 }).transform(data => data as PostInputEditDTO);
 
 

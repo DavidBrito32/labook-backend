@@ -1,10 +1,10 @@
 import { CreatePost, LikeDislikeDB, PostDB, PostDataBase } from "../database/postDataBase";import { PostsInputDTO, CreatePostOutputDTO, PostOutputDTO, PostInputEditDTO, CreatePostEditOutputDTO, PostDeleteInputDTO, PostDeleteOutPutDTO, PostInputDTO, LikePostInputDTO } from "../dto/posts";
 import { BadRequest } from "../errors/BadRequest";
 import { NotFound } from "../errors/NotFound";
-import { Unouthorized } from "../errors/Unouthorized";
 import { Post } from "../models/Post";
 import { TokenManager } from "../services/token";
 import { IdGenerator } from "../services/uuid";
+import { Unouthorized } from "./../errors/Unouthorized";
 
 export class PostBusiness {
 	constructor(
@@ -24,12 +24,12 @@ export class PostBusiness {
 		const Posts = await this.postDatabase.findAllPosts();
 		const PostModel: Array<PostOutputDTO> = Posts.map(post => new Post(post.id, post.creator_id, post.content, post.likes, post.dislikes, post.created_at, post.updated_at, post.creator_name).getModel());
 		return PostModel;
-	};
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
 
 	public createPosts = async (input: PostsInputDTO): Promise<CreatePostOutputDTO> => {
 		const { creatorId, content, authorization } = input;
-		const valid = this.tokenManager.getPayload(authorization.split(" ")[1]);
-		if(valid === null){
+		const autorizado = this.tokenManager.getPayload(authorization.split(" ")[1]);
+		if(autorizado === null){
 			throw new Unouthorized();
 		}
 		const [exists]: Array<PostDB> = await this.postDatabase.findPostByUserId(creatorId);
@@ -43,17 +43,20 @@ export class PostBusiness {
 			content,
 			creator_id: creatorId,
 			created_at: new Date().toISOString()
-		};
-		
+		};		
 		await this.postDatabase.insertPost(post);		
 		const output: CreatePostOutputDTO = {
 			message: "Post Criado com sucesso"
 		};
 		return output;	
-	};
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
 
 	public editPosts = async (input: PostInputEditDTO): Promise<CreatePostEditOutputDTO> =>{	
-		
+		const autorizado = this.tokenManager.getPayload(input.authorization.split(" ")[1]);
+		if(autorizado === null){
+			throw new Unouthorized();
+		}
+
 		const [exists]: Array<PostDB> = await this.postDatabase.findPostById(input.idPost);
 		if(!exists){
 			throw new BadRequest("'post' - não localizado");
@@ -71,11 +74,10 @@ export class PostBusiness {
 		};
 
 		return output;
-	};
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
 
 	public deletePost = async (input: PostDeleteInputDTO): Promise<PostDeleteOutPutDTO> => {
 		const { id, authorization } = input;
-
 		const autorizado = this.tokenManager.getPayload(authorization.split(" ")[1]);
 
 		if(autorizado === null){
@@ -92,7 +94,7 @@ export class PostBusiness {
 		};
 
 		return output;
-	};
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
 
 	public likePost = async (input: LikePostInputDTO): Promise<void> => {
 		const { postID, like, authorization }: LikePostInputDTO = input;
@@ -102,14 +104,10 @@ export class PostBusiness {
 			throw new Unouthorized();
 		}
 
-		
 		const deuLike: LikeDislikeDB | undefined = await this.postDatabase.findLikeDislike({
 			user_id: autorizado.id,
 			post_id: postID
 		});
-
-		console.log(deuLike);
-
 
 		if (like && !deuLike) {
 			const inputLike = {
@@ -118,7 +116,6 @@ export class PostBusiness {
 				like: 1,
 				dislike: 0
 			};
-			console.log("if 1");
 			await this.postDatabase.insertLike(inputLike);
 		} else if (like && deuLike && deuLike.like > 0) {
 			const inputLike = {
@@ -127,19 +124,25 @@ export class PostBusiness {
 				like: 0,
 				dislike: 0
 			};
-			console.log("if 2");
 			await this.postDatabase.updateLikeDislike(inputLike);
 			return;
-		} else if (!like && deuLike  && deuLike.dislike < 1) {
+		} else if (like && deuLike && deuLike.dislike < 1 && deuLike.like === 0) {
+			const inputLike = {
+				user_id: autorizado.id,
+				post_id: postID,
+				like: 1,
+				dislike: 0
+			};
+			await this.postDatabase.updateLikeDislike(inputLike);
+		} else if (!like && deuLike && deuLike.dislike === 0 && deuLike.like === 0){
 			const inputLike = {
 				user_id: autorizado.id,
 				post_id: postID,
 				like: 0,
 				dislike: 1
 			};
-			console.log("if 3");
 			await this.postDatabase.updateLikeDislike(inputLike);
-		} else {
+		}else{
 			const inputLike = {
 				user_id: autorizado.id,
 				post_id: postID,
@@ -147,9 +150,6 @@ export class PostBusiness {
 				dislike: 0
 			};
 			await this.postDatabase.updateLikeDislike(inputLike);
-			console.log("if 4");
 		}
-		
-		
-	};
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
 }

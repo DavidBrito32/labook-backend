@@ -21,7 +21,7 @@ export interface CreateUserInputDTO {
     name: string;
     email: string;
     password: string;
-    role: USER_ROLES;
+    role?: USER_ROLES;
 }
 
 export interface CreateUserOutputDTO {
@@ -64,5 +64,5 @@ export const InsertUserSchema = z.object({
 	// 	required_error: "'role' -  É um dado obrigatorio",
 	// 	invalid_type_error: "'role' - Deve ser do tipo string"
 	// })
-	role: z.enum([USER_ROLES.ADMIN, USER_ROLES.NORMAL])
+	role: z.enum([USER_ROLES.ADMIN, USER_ROLES.NORMAL]).optional()
 }).transform(data => data as CreateUserInputDTO);

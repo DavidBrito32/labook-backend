@@ -48,6 +48,9 @@ interface FindLikePostByUser {
 }
 
 export class PostDataBase extends DataBase {
+
+	
+
 	public findAllPosts = async (): Promise<Array<PostDB>> => {
 		const query = `
 		SELECT 

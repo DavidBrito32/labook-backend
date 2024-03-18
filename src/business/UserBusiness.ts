@@ -10,9 +10,7 @@ import { IdGenerator } from "../services/uuid";
 export enum USER_ROLES {
 	NORMAL = "NORMAL",
 	ADMIN = "ADMIN",
-  }
-
-
+}
 export class UserBusiness {
 	constructor(
         protected userDataBase: UserDataBase,
@@ -28,27 +26,21 @@ export class UserBusiness {
 			throw new ForbiddenError("Informações invalidas");
 		}
 		const passwordIsCorrect: boolean = await this.hashManager.compare(password, exists.password);
-
 		if(!passwordIsCorrect){
 			throw new BadRequest("'email' ou 'password' invalidos");
 		}
-
 		const usuario = new Users(exists.id,exists.name,exists.email,exists.password,exists.role,exists.created_at);
-
 		const tokenPayload: TokenPayload = usuario.getPayload();
-
 		const token = this.tokenManager.createToken(tokenPayload);
-
 		const output: LoginOutputDTO = {
 			message: "login realizado com sucesso",
 			token
-		};
-		
+		};		
 		return output;
 	};
 
 	public signup = async (input: CreateUserInputDTO): Promise<void> => {
-		const { name, email, password, role } = input;
+		const { name, email, password } = input;
 		const [isEmailAllReadyExists]: Array<UserDB> = await this.userDataBase.findUserbyEmail(email);
 		if(isEmailAllReadyExists){
 			throw new BadRequest("'email' - Informe outro email");
@@ -67,7 +59,7 @@ export class UserBusiness {
 			name,
 			email,
 			password: passwordHash,
-			role,
+			role: USER_ROLES.NORMAL,
 			created_at: currentDate
 		};
 		await this.userDataBase.insertUser(usuario);

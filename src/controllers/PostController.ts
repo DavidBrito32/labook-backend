@@ -24,7 +24,8 @@ export class PostController {
 			}
             
 		}
-	}; //OK [✅]
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
+	
 	public createPosts = async (req: Request, res: Response) => {
 		try{
 			const input: PostsInputDTO = PostsSchema.parse({
@@ -43,12 +44,14 @@ export class PostController {
 			}
             
 		}
-	}; //OK [✅]
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
+	
 	public editPost = async (req: Request, res: Response) => {
 		try{
 			const input: PostInputEditDTO = PostSchemaEdit.parse({
 				...req.body,
-				idPost: req.params.id
+				idPost: req.params.id,
+				authorization: req.headers.authorization
 			});
 			const posts: CreatePostEditOutputDTO = await this.postBusiness.editPosts(input);
 			res.status(200).send(posts);
@@ -62,7 +65,8 @@ export class PostController {
 			}
             
 		}
-	}; //OK [✅]
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
+	
 	public deletePost = async (req: Request, res: Response) => {
 		try{
 			const input: PostDeleteInputDTO = PostDeleteSchema.parse({
@@ -81,8 +85,9 @@ export class PostController {
 			}
             
 		}
-	}; //OK [✅]
-	public likePost = async (req: Request, res: Response) => {
+	}; //OK [✅] TOKENIZAÇÃO OK ✅
+	
+	public LikeDislikePost = async (req: Request, res: Response) => {
 		try{
 			const input: LikePostInputDTO = LikePostSchema.parse({
 				like: req.body.like,
@@ -90,7 +95,7 @@ export class PostController {
 				authorization: req.headers.authorization
 			});
 			await this.postBusiness.likePost(input);
-			res.status(200).send("Deu like");
+			res.status(200).send("Ação executada com sucesso!");
 		}catch (err){
 			if(err instanceof ZodError){
 				res.status(400).send(err.issues);
@@ -101,25 +106,6 @@ export class PostController {
 			}
             
 		}
-	}; 
-	public dislikePost = async (req: Request, res: Response) => {
-		try{
-			const input: PostDeleteInputDTO = PostDeleteSchema.parse({
-				id: req.params.id,
-				authorization: req.headers.authorization
-			});
-			const posts: PostDeleteOutPutDTO = await this.postBusiness.deletePost(input);
-			res.status(200).send(posts);
-		}catch (err){
-			if(err instanceof ZodError){
-				res.status(400).send(err.issues);
-			}else if (err instanceof CustomError){
-				res.status(err.statusCode).send(err.message);
-			}else{
-				res.status(500).send(`Erro não tratado: DESC: ${err}`);
-			}
-            
-		}
-	}; 
+	};	//OK [✅] TOKENIZAÇÃO OK ✅
 	
 }
