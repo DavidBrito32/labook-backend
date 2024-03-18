@@ -30,10 +30,17 @@ Neste projeto, utilizamos as bases de criação de APIs e bancos de dados para d
 
 - Para consumir corretamente os endpoints desta API, é crucial seguir as instruções da documentação. Para acessar a documentação completa da API, clique [aqui](https://documenter.getpostman.com/view/29849540/2sA2xpS8rg).
 
+
+## Preparação de ambiente 💻⚒️🔍
+Antes de começarmos, é importante verificar se o Node.js está instalado na sua máquina. Se não estiver, não se preocupe! Você pode baixá-lo facilmente clicando [aqui](https://nodejs.org/en/download/current). Vamos garantir que tudo esteja configurado corretamente antes de prosseguirmos.
 ## Passo a passo para executar este projeto 🔨
 
 ### Passo 1 🚦:
-- Antes de qualquer coisa verifique se sua maquina possui o **Node.Js** instalado, caso não possua você pode baixar clicando [aqui]('http://node.js.com').
+
+
+
+
+
 ```
     npm install
 ```
@@ -51,7 +58,7 @@ ou
     yarn dev
 ```
 
-## Lista de requisitos ❗
+## Lista de requisitos ⛔⚡
 
 - Documentação Postman de todos os endpoints (obrigatória para correção)
 - Implementação dos seguintes endpoints:
