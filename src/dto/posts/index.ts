@@ -46,22 +46,18 @@ export const PostDeleteSchema = z.object({
 export interface PostDeleteOutPutDTO {
 	message: string;
 }
-
 export interface PostDataInputDTO {
     creatorId: string;
     content: string;
     createdAt: string;
 
 }
-
-
 export interface CreatePostOutputDTO {
     message: string;
 }
 export interface CreatePostEditOutputDTO {
     message: string;
 }
-
 export interface PostOutputDTO {
 	id: string;
 	content: string;
@@ -94,3 +90,27 @@ export const PostSchemaEdit = z.object({
 	}).min(2),
 	content: z.string({invalid_type_error: "'content' - deve ser uma string"}).min(2).optional()
 }).transform(data => data as PostInputEditDTO);
+
+
+// LIKE POSTS
+
+export interface LikePostInputDTO {
+	postID: string;
+	like: boolean;
+	authorization: string;
+}
+
+export const LikePostSchema = z.object({
+	postID: z.string({
+		invalid_type_error: "'postID' - deve ser uma string",
+		required_error: "'postID' - é um campo obrigatorio"}
+	).min(2),
+	like: z.boolean({
+		invalid_type_error: "'like' - deve ser do tipo boolean",
+		required_error: "'like' - é um campo obrigatorio"
+	}),
+	authorization: z.string({
+		invalid_type_error: "'authorization' - deve ser do tipo boolean",
+		required_error: "'authorization' - é um campo obrigatorio"
+	}).min(2)
+}).transform(data => data as LikePostInputDTO);

@@ -38,7 +38,7 @@ create table
 SELECT
     *
 FROM
-    posts;
+    users;
 
 CREATE TABLE
     IF NOT EXISTS likes_dislikes (
@@ -53,3 +53,5 @@ CREATE TABLE
 DROP TABLE likes_dislikes;
 
 PRAGMA table_info (likes_dislikes);
+
+SELECT * FROM likes_dislikes;

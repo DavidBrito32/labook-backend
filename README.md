@@ -28,10 +28,10 @@ https://dbdiagram.io/d/63d16443296d97641d7c1ae1
 - Endpoints
     - [ x ]  signup
     - [ x ]  login
-    - [  ]  create post
+    - [ x ]  create post
     - [ x ]  get posts
-    - [ ]  edit post
-    - [ ]  delete post
+    - [ x ]  edit post
+    - [ x ]  delete post
     - [ ]  like / dislike post
 
 - Autenticação e autorização

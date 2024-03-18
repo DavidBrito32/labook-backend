@@ -23,7 +23,6 @@ export class UserBusiness {
 	public login = async (input: LoginInputDTO): Promise<LoginOutputDTO> => {
 		const { email, password } = input;
 		const [exists]: Array<UserDB> = await this.userDataBase.findUserbyEmail(email);
-		console.log(exists);
 
 		if(!exists){
 			throw new ForbiddenError("Informações invalidas");

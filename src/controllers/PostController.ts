@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { PostBusiness } from "../business/PostBusiness";
 import { ZodError } from "zod";
 import { CustomError } from "../errors/CustomError";
-import { CreatePostEditOutputDTO, CreatePostOutputDTO, PostDeleteInputDTO, PostDeleteOutPutDTO, PostDeleteSchema, PostInputDTO, PostInputEditDTO, PostOutputDTO, PostSchemaEdit, PostsInputDTO, PostsSchema, PostsSchemaDTO } from "../dto/posts";
+import { CreatePostEditOutputDTO, CreatePostOutputDTO, LikePostInputDTO, LikePostSchema, PostDeleteInputDTO, PostDeleteOutPutDTO, PostDeleteSchema, PostInputDTO, PostInputEditDTO, PostOutputDTO, PostSchemaEdit, PostsInputDTO, PostsSchema, PostsSchemaDTO } from "../dto/posts";
 
 export class PostController {
 	constructor(
@@ -81,5 +81,45 @@ export class PostController {
 			}
             
 		}
-	};
+	}; //OK [✅]
+	public likePost = async (req: Request, res: Response) => {
+		try{
+			const input: LikePostInputDTO = LikePostSchema.parse({
+				like: req.body.like,
+				postID: req.params.id,
+				authorization: req.headers.authorization
+			});
+			await this.postBusiness.likePost(input);
+			res.status(200).send("Deu like");
+		}catch (err){
+			if(err instanceof ZodError){
+				res.status(400).send(err.issues);
+			}else if (err instanceof CustomError){
+				res.status(err.statusCode).send(err.message);
+			}else{
+				res.status(500).send(`Erro não tratado: DESC: ${err}`);
+			}
+            
+		}
+	}; 
+	public dislikePost = async (req: Request, res: Response) => {
+		try{
+			const input: PostDeleteInputDTO = PostDeleteSchema.parse({
+				id: req.params.id,
+				authorization: req.headers.authorization
+			});
+			const posts: PostDeleteOutPutDTO = await this.postBusiness.deletePost(input);
+			res.status(200).send(posts);
+		}catch (err){
+			if(err instanceof ZodError){
+				res.status(400).send(err.issues);
+			}else if (err instanceof CustomError){
+				res.status(err.statusCode).send(err.message);
+			}else{
+				res.status(500).send(`Erro não tratado: DESC: ${err}`);
+			}
+            
+		}
+	}; 
+	
 }

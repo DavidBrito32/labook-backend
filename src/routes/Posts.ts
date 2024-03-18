@@ -9,7 +9,8 @@ export const Posts = express.Router();
 const post = new PostController(new PostBusiness(new PostDataBase(), new IdGenerator(), new TokenManager()));
 
 Posts.get("/", post.getAllPosts);
-
 Posts.post("/", post.createPosts);
 Posts.put("/:id", post.editPost);
 Posts.delete("/:id", post.deletePost);
+
+Posts.post("/:id/like", post.likePost);

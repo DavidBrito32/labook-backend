@@ -1,5 +1,4 @@
-import { CreatePost, PostDB, PostDataBase } from "../database/postDataBase";
-import { PostsInputDTO, CreatePostOutputDTO, PostOutputDTO, PostInputEditDTO, CreatePostEditOutputDTO, PostDeleteInputDTO, PostDeleteOutPutDTO, PostInputDTO } from "../dto/posts";
+import { CreatePost, LikeDislikeDB, PostDB, PostDataBase } from "../database/postDataBase";import { PostsInputDTO, CreatePostOutputDTO, PostOutputDTO, PostInputEditDTO, CreatePostEditOutputDTO, PostDeleteInputDTO, PostDeleteOutPutDTO, PostInputDTO, LikePostInputDTO } from "../dto/posts";
 import { BadRequest } from "../errors/BadRequest";
 import { NotFound } from "../errors/NotFound";
 import { Unouthorized } from "../errors/Unouthorized";
@@ -34,6 +33,7 @@ export class PostBusiness {
 			throw new Unouthorized();
 		}
 		const [exists]: Array<PostDB> = await this.postDatabase.findPostByUserId(creatorId);
+
 		if(!exists){
 			throw new BadRequest("Verifique os dados informados e tente novamente");
 		}
@@ -92,5 +92,64 @@ export class PostBusiness {
 		};
 
 		return output;
+	};
+
+	public likePost = async (input: LikePostInputDTO): Promise<void> => {
+		const { postID, like, authorization }: LikePostInputDTO = input;
+		const autorizado = this.tokenManager.getPayload(authorization.split(" ")[1]);
+
+		if(autorizado === null){
+			throw new Unouthorized();
+		}
+
+		
+		const deuLike: LikeDislikeDB | undefined = await this.postDatabase.findLikeDislike({
+			user_id: autorizado.id,
+			post_id: postID
+		});
+
+		console.log(deuLike);
+
+
+		if (like && !deuLike) {
+			const inputLike = {
+				user_id: autorizado.id,
+				post_id: postID,
+				like: 1,
+				dislike: 0
+			};
+			console.log("if 1");
+			await this.postDatabase.insertLike(inputLike);
+		} else if (like && deuLike && deuLike.like > 0) {
+			const inputLike = {
+				user_id: autorizado.id,
+				post_id: postID,
+				like: 0,
+				dislike: 0
+			};
+			console.log("if 2");
+			await this.postDatabase.updateLikeDislike(inputLike);
+			return;
+		} else if (!like && deuLike  && deuLike.dislike < 1) {
+			const inputLike = {
+				user_id: autorizado.id,
+				post_id: postID,
+				like: 0,
+				dislike: 1
+			};
+			console.log("if 3");
+			await this.postDatabase.updateLikeDislike(inputLike);
+		} else {
+			const inputLike = {
+				user_id: autorizado.id,
+				post_id: postID,
+				like: 0,
+				dislike: 0
+			};
+			await this.postDatabase.updateLikeDislike(inputLike);
+			console.log("if 4");
+		}
+		
+		
 	};
 }
